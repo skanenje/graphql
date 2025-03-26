@@ -7,8 +7,16 @@ export async function loginUser(client, email, password) {
   try {
     const response = await fetch(SIGNIN_ENDPOINT, {
       method: "POST",
-      headers: { Authorization: `Basic ${encodedCreds}` },
+      headers: { 
+        Authorization: `Basic ${encodedCreds}`,
+        'Content-Type': 'application/json'
+      },
     });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+    }
     
     const data = await response.json();
     if (data.token) {
@@ -18,8 +26,9 @@ export async function loginUser(client, email, password) {
         token: data.token
       };
     }
-    throw new Error("Invalid credentials");
+    throw new Error("No token received from server");
   } catch (error) {
+    console.error("Login error details:", error);
     throw new Error("Login failed: " + error.message);
   }
 }
