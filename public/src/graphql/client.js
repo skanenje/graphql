@@ -10,7 +10,7 @@ export const client = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        "Authorization": `Bearer ${token.trim()}`,
       },
       body: JSON.stringify({ query, variables }),
     });

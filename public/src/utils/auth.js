@@ -24,37 +24,36 @@ export async function loginUser(client, email, password) {
     
     console.log('Response status:', response.status);
     
-    // Try to parse response data
-    const data = await response.json().catch(e => {
-      console.error('Failed to parse response:', e);
-      return null;
-    });
-    
-    console.log('Response data:', data); // Add this to see the response
-
     if (!response.ok) {
-      throw new Error(data?.message || `Server error (${response.status})`);
+      throw new Error(`Server error (${response.status})`);
     }
+
+    // Get the token as plain text and remove any quotes
+    let token = await response.text();
+    // Remove surrounding quotes if present
+    token = token.replace(/^"(.*)"$/, '$1');
     
-    if (!data) {
+    console.log('Token received:', token.substring(0, 20) + '...');
+
+    if (!token) {
       throw new Error('Empty response from server');
     }
-    
-    if (!data.token) {
-      throw new Error('No token received from server');
-    }
 
-    localStorage.setItem("jwt", data.token);
+    // Store the token
+    localStorage.setItem("jwt", token);
+
+    // Return the expected format
     return { 
-      ...data.user,
-      token: data.token
+      token: token,
+      email: email,
+      id: extractUserIdFromToken(token)
     };
   } catch (error) {
     console.error("Login error details:", error);
     if (error.message.includes('Failed to fetch')) {
       throw new Error('Cannot connect to server - please check your internet connection');
     }
-    throw error; // Preserve the original error
+    throw error;
   }
 }
 
@@ -64,4 +63,16 @@ export async function logoutUser(client) {
 
 export function getCurrentToken() {
   return localStorage.getItem("jwt");
+}
+
+// Helper function to extract user ID from JWT
+function extractUserIdFromToken(token) {
+  try {
+    const payload = token.split('.')[1];
+    const decodedPayload = JSON.parse(atob(payload));
+    return decodedPayload['https://hasura.io/jwt/claims']['x-hasura-user-id'];
+  } catch (e) {
+    console.error('Failed to extract user ID from token:', e);
+    return null;
+  }
 }
