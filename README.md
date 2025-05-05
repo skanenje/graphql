@@ -1,34 +1,72 @@
-# GraphQL Profile Project
+# Zone01 Profile
 
-A React application that displays user profile information and statistics using GraphQL.
+A web application that allows Apprentices and Piscine users view their profile information through a GraphQL API. The dashboard displays user stats, XP progression, skills, and audit information in an interactive interface.
 
 ## Features
 
 - User authentication with JWT
-- Profile information display
-- XP statistics visualization
-- Responsive design
+- Interactive dashboard with:
+  - XP progression chart
+  - Skills visualization
+  - Audit ratio statistics
+  - Profile metrics
 
-## Installation
+## Technology Stack
+
+- Frontend: HTML, CSS, JavaScript
+- GraphQL API integration
+- JWT authentication
+- Docker containerization
+- Nginx web server
+
+## Project Structure
+
+```
+├── Dockerfile           # Docker container configuration
+├── nginx.conf          # Nginx server configuration
+├── README.md           # Project documentation
+└── public/             # Static files served by Nginx
+    ├── index.html      # Login page
+    ├── profile.html    # Dashboard page
+    ├── css/
+    │   └── style.css   # Application styles
+    ├── js/
+    │   ├── script.js   # Login authentication logic
+    │   └── profile.js  # Dashboard functionality
+    └── test/
+        └── graphiql.html  # GraphQL API testing interface
+```
+
+## Getting Started
 
 1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Configure your GraphQL endpoint in `src/graphql/client.js`
-4. Configure your authentication endpoint in `src/utils/auth.js`
+2. Build the Docker image:
+```sh
+docker build -t graphql-dashboard .
+```
 
-## Available Scripts
+3. Run the container:
+```sh
+docker run -p 8081:8081 graphql-dashboard
+```
 
-- `npm start`: Runs the app in development mode
-- `npm run build`: Builds the app for production
-- `npm test`: Runs tests
-- `npm run eject`: Ejects from create-react-app
+4. Access the application at `http://localhost:8081`
 
-## Deployment
+## Development
 
-Build the project and deploy the contents of the `build` folder to your hosting provider.
+- The application uses Basic Authentication for initial login
+- JWT tokens are stored in localStorage for subsequent API calls
+- The GraphQL endpoint is accessed at `https://learn.zone01kisumu.ke/api/graphql-engine/v1/graphql`
+- GraphiQL interface is available at `/test/graphiql.html` for API testing
 
-```bash
-npm run build
+## Security Features
+
+- JWT-based authentication
+- Secure headers configured in Nginx
+- HTTPS ready
+- XSS protection headers
+- Content Security Policy
+
+## Live Demo
+
+https://zone01profile.netlify.app/
